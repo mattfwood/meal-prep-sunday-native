@@ -1,5 +1,5 @@
 import React from 'react';
-import { ScrollView, View, Button } from 'react-native';
+import { ScrollView, View, Button, StyleSheet } from 'react-native';
 import { StackNavigator, SafeAreaView } from 'react-navigation';
 import {
   Container,
@@ -18,23 +18,52 @@ import {
   H1,
 } from 'native-base';
 
+const styles = StyleSheet.create({
+  heading: {
+    textAlign: 'center',
+    paddingTop: 10,
+    paddingBottom: 10,
+  },
+  title: {
+    fontSize: 19,
+    fontWeight: 'bold',
+  },
+  activeTitle: {
+    color: 'red',
+  },
+});
+
 const RecipeView = ({ navigation }) => {
   const { recipe } = navigation.state.params;
+
+  const sortedIngredients = {};
+  recipe.ingredients.forEach((ingredient) => {
+    if (sortedIngredients[ingredient.aisle] === undefined) {
+      sortedIngredients[ingredient.aisle] = [ingredient];
+    } else {
+      sortedIngredients[ingredient.aisle].push(ingredient);
+    }
+  });
+
   return (
     <Content>
       <View>
-        <H1>{recipe.name}</H1>
+        <H1 style={styles.heading}>{recipe.name}</H1>
       </View>
-      <List
-        dataArray={recipe.ingredients}
-        renderRow={ingredient => (
-          <ListItem style={{ marginLeft: 0 }}>
-            <Left>
-              <Text>{ingredient.ingredientName}</Text>
-            </Left>
-          </ListItem>
-        )}
-      />
+      <List>
+        {Object.keys(sortedIngredients).map((key, index) => (
+          <View key={index}>
+            <ListItem itemHeader first>
+              <Text style={{ fontWeight: 'bold' }}>{key.toUpperCase().replace(';', ' / ')}</Text>
+            </ListItem>
+            {sortedIngredients[key].map((ingredient, index) => (
+              <ListItem key={`${key}-${index}`} style={{ marginLeft: 0, paddingLeft: 15 }}>
+                <Text>{ingredient.ingredientName}</Text>
+              </ListItem>
+              ))}
+          </View>
+          ))}
+      </List>
     </Content>
   );
 };

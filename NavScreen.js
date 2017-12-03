@@ -18,7 +18,6 @@ import {
 } from 'native-base';
 
 const NavScreen = ({ navigation, banner }) => {
-  console.log(navigation.state);
   return (
     <SafeAreaView>
       {/* <Text>{banner}</Text> */}

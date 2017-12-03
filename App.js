@@ -1,6 +1,6 @@
 import React from 'react';
 import { ScrollView } from 'react-native';
-import { StackNavigator, SafeAreaView } from 'react-navigation';
+import { StackNavigator, NavigationActions } from 'react-navigation';
 import {
   Container,
   Header,
@@ -20,12 +20,13 @@ import {
   View,
 } from 'native-base';
 import base from './base';
+import GroceryListIndex from './GroceryListIndex';
+import GroceryListShow from './GroceryListShow';
 
 import NavScreen from './NavScreen';
 
 const HomeScreen = ({ navigation, screenProps }) => (
   <Content>
-    <NavScreen banner="Home Screen" navigation={navigation} />
     <List
       dataArray={screenProps.recipes}
       renderRow={recipe => (
@@ -45,10 +46,6 @@ const HomeScreen = ({ navigation, screenProps }) => (
     />
   </Content>
 );
-
-HomeScreen.navigationOptions = {
-  title: 'Home',
-};
 
 const MyPhotosScreen = ({ navigation }) => (
   <NavScreen banner={`${navigation.state.params.name}'s Photos`} navigation={navigation} />
@@ -86,8 +83,9 @@ MyProfileScreen.navigationOptions = (props) => {
   };
 };
 
-const AppNavigator = StackNavigator({
+const RecipeNavigator = StackNavigator({
   Home: {
+    path: 'recipes/:mode',
     screen: HomeScreen,
   },
   Profile: {
@@ -105,11 +103,42 @@ const AppNavigator = StackNavigator({
   },
 });
 
+RecipeNavigator.navigationOptions = (props) => {
+  const { navigation } = props;
+  const { state, setParams } = navigation;
+  const { params } = state;
+  return {
+    headerTitle: 'Home',
+    headerRight: (
+      <Icon
+        style={{ marginRight: 20 }}
+        name="add"
+        onPress={() =>
+          setParams({ mode: params.mode === 'edit' ? 'view' : 'edit' })}
+      />
+    ),
+  };
+};
+
+const GroceryListNavigator = StackNavigator({
+  Home: {
+    screen: GroceryListIndex,
+  },
+
+  GroceryListShow: {
+    path: 'lists/:id',
+    screen: GroceryListShow,
+  },
+});
+
 class App extends React.Component {
   constructor(props) {
     super(props);
     this.state = {
       recipes: [],
+      groceryLists: [],
+      tab: 'Home',
+      mode: 'view',
     };
   }
 
@@ -119,26 +148,82 @@ class App extends React.Component {
       state: 'recipes',
       asArray: true,
     });
+
+    this.ref = base.syncState('ciPqmj1k1oepwseUMpZoy86pYEu1/groceryLists', {
+      context: this,
+      state: 'groceryLists',
+      asArray: true,
+    });
   }
 
-  someEvent() {
-    // call navigate for AppNavigator here:
-    this.navigator &&
-      this.navigator.dispatch(NavigationActions.navigate({ routeName: someRouteName }));
+  toggleMode() {
+    console.log(this.state.mode);
+    const newMode = 'view' ? 'edit' : 'view';
+    this.setState({ mode: newMode });
   }
 
   render() {
-    return (
-      <Container>
-        <AppNavigator
-          ref={(nav) => {
-            this.navigator = nav;
-            this.recipes = this.state.recipes;
-          }}
-          screenProps={this.state}
-        />
-      </Container>
-    );
+    const { tab } = this.state;
+    if (tab === 'Home') {
+      return (
+        <Container>
+          <RecipeNavigator
+            ref={(nav) => {
+              this.navigator = nav;
+              this.recipes = this.state.recipes;
+            }}
+            screenProps={this.state}
+          />
+          <Footer>
+            <FooterTab>
+              <Button vertical active>
+                <Icon name="list" />
+                <Text>Recipes</Text>
+              </Button>
+              <Button vertical onPress={() => this.setState({ tab: 'GroceryLists' })}>
+                <Icon name="cart" />
+                <Text>Grocery Lists</Text>
+              </Button>
+              <Button vertical>
+                <Icon name="settings" />
+                <Text>Settings</Text>
+              </Button>
+            </FooterTab>
+          </Footer>
+        </Container>
+      );
+    }
+
+    if (tab === 'GroceryLists') {
+      return (
+        <Container>
+          <GroceryListNavigator
+            ref={(nav) => {
+              this.navigator = nav;
+              this.groceryLists = this.state.groceryLists;
+            }}
+            screenProps={this.state}
+          />
+          <Footer>
+            <FooterTab>
+              <Button vertical onPress={() => this.setState({ tab: 'Home' })}>
+                <Icon name="list" />
+                <Text>Recipes</Text>
+              </Button>
+              <Button vertical active onPress={() => this.setState({ tab: 'GroceryLists' })}>
+                <Icon name="cart" />
+                <Text>Grocery Lists</Text>
+              </Button>
+              <Button vertical>
+                <Icon name="settings" />
+                <Text>Settings</Text>
+              </Button>
+            </FooterTab>
+          </Footer>
+        </Container>
+      );
+    }
+    return null;
   }
 }
 
