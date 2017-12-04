@@ -24,28 +24,8 @@ import GroceryListIndex from './GroceryListIndex';
 import GroceryListShow from './GroceryListShow';
 
 import NavScreen from './NavScreen';
-
-const HomeScreen = ({ navigation, screenProps }) => (
-  <Content>
-    <List
-      dataArray={screenProps.recipes}
-      renderRow={recipe => (
-        <ListItem
-          button
-          onPress={() => navigation.navigate('Recipes', { recipe })}
-          style={{ marginLeft: 0 }}
-        >
-          <Left>
-            <Text>{recipe.name}</Text>
-          </Left>
-          <Right>
-            <Icon name="arrow-forward" />
-          </Right>
-        </ListItem>
-      )}
-    />
-  </Content>
-);
+import HomeScreen from './HomeScreen';
+import AddRecipeForm from './AddRecipeForm';
 
 const MyPhotosScreen = ({ navigation }) => (
   <NavScreen banner={`${navigation.state.params.name}'s Photos`} navigation={navigation} />
@@ -55,43 +35,36 @@ MyPhotosScreen.navigationOptions = {
   title: 'Photos',
 };
 
-const MyProfileScreen = ({ navigation }) => (
-  <NavScreen
-    banner={`${navigation.state.params.mode === 'edit' ? 'Now Editing ' : ''}${
-      navigation.state.params.name
-    }'s Profile`}
-    navigation={navigation}
-  />
-);
-
 import RecipeView from './RecipeView';
 
-MyProfileScreen.navigationOptions = (props) => {
-  const { navigation } = props;
-  const { state, setParams } = navigation;
-  const { params } = state;
-  return {
-    headerTitle: `${params.name}'s Profile!`,
-    // Render a button on the right side of the header.
-    // When pressed switches the screen to edit mode.
-    headerRight: (
-      <Button
-        title={params.mode === 'edit' ? 'Done' : 'Edit'}
-        onPress={() => setParams({ mode: params.mode === 'edit' ? '' : 'edit' })}
-      />
-    ),
-  };
-};
+// AddRecipeForm.navigationOptions = (props) => {
+//   const { navigation } = props;
+//   const { state, setParams } = navigation;
+//   const { params } = state;
+//   return {
+//     headerTitle: `Person's Profile!`,
+//     // Render a button on the right side of the header.
+//     // When pressed switches the screen to edit mode.
+//     headerRight: (
+//       <Button
+//         title={params.mode === 'edit' ? 'Done' : 'Edit'}
+//         onPress={() => setParams({ mode: params.mode === 'edit' ? '' : 'edit' })}
+//       />
+//     ),
+//   };
+// };
 
 const RecipeNavigator = StackNavigator({
   Home: {
     path: 'recipes/:mode',
     screen: HomeScreen,
   },
-  Profile: {
+
+  AddRecipe: {
     path: 'people/:name',
-    screen: MyProfileScreen,
+    screen: AddRecipeForm,
   },
+
   Photos: {
     path: 'photos/:name',
     screen: MyPhotosScreen,
