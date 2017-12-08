@@ -48,7 +48,7 @@ class HomeScreen extends React.Component {
   static navigationOptions = ({ navigation, screenProps }) => ({
     title: 'Recipes',
     headerRight: (
-      <Icon
+      <Icon button
         name="add"
         onPress={() => navigation.navigate('AddRecipe')}
         style={{ paddingRight: 20 }}

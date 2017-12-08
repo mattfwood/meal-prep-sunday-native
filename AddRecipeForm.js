@@ -32,8 +32,6 @@ class AddRecipeForm extends React.Component {
     title: 'Recipes',
     headerRight: (
       <Text
-        name="add"
-        onPress={() => navigation.navigate('AddRecipe')}
         style={{ paddingRight: 20 }}
       >
         Save
@@ -41,40 +39,52 @@ class AddRecipeForm extends React.Component {
     )
   });
 
+  state = {
+    recipeName: '',
+    newIngredient: '',
+    ingredients: [],
+  }
+
+  addIngredient() {
+    if (this.state.newIngredient.value !== '') {
+      const ingredients = this.state.ingredients;
+      
+      ingredients.push(this.state.newIngredient);
+  
+      this.setState({ ingredients });
+  
+      this.setState({ newIngredient: '' });
+    }
+  }
+
   render() {
     return (
-      <Content style={{ padding: 20 }}>
-        <Form>
+      <Content>
+        <Form style={{ padding: 20 }}>
           <Item>
-            <Input placeholder="Recipe Name" />
+            <Input placeholder="Recipe Name"
+              onChangeText={(recipeName) => this.setState({ recipeName })}
+            />
           </Item>
           <Item last>
-            <Input placeholder="Ingredients" />
+            <Input placeholder="Ingredients"
+              onChangeText={(newIngredient) => this.setState({ newIngredient })}
+            />
           </Item>
-          <Button block style={{ marginTop: 20 }}>
+          <Button block style={{ marginTop: 20 }} onPress={() => this.addIngredient()}>
             <Text>Add</Text>
           </Button>
         </Form>
+        <List dataArray={this.state.ingredients}
+            renderRow={(ingredient) =>
+              <ListItem style={{ marginLeft: 0, paddingLeft: 15 }}>
+                <Text>{ingredient}</Text>
+              </ListItem>
+            }>
+          </List>
       </Content>
     );
   }
 }
-
-// const AddRecipeForm = ({ navigation }) => (
-//   <Content style={{ padding: 20 }}>
-//     <NavScreen banner="banner" navigation={navigation} />
-//     <Form>
-//       <Item>
-//         <Input placeholder="Username" />
-//       </Item>
-//       <Item last>
-//         <Input placeholder="Password" />
-//       </Item>
-//       <Button block style={{ marginTop: 20 }}>
-//         <Text>Primary</Text>
-//       </Button>
-//     </Form>
-//   </Content>
-// );
 
 export default AddRecipeForm;

@@ -135,6 +135,14 @@ class App extends React.Component {
     this.setState({ mode: newMode });
   }
 
+  addRecipe(recipe) {
+    const recipes = this.state.recipes;
+
+    recipes.push(recipe);
+
+    this.setState({ recipe });
+  }
+
   render() {
     const { tab } = this.state;
     if (tab === 'Home') {
